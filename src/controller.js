@@ -1,13 +1,13 @@
 import { pool } from "./database.js";
 
 class LibroController {
-  // Obtiene todos los libros
+  // Obtiene todos los libros - LECTURA - cRud (READ)
   async getAll(req, res) {
     const [result] = await pool.query('SELECT * FROM Bibliotecarest.libros');
     res.json(result);
   }
 
-  // Se agrega la funcionalidad de agregar un libro
+  // Se agrega la funcionalidad de agregar un libro - CREAR - Crud (CREATE)
   // Agrega un libro:
   
   async add(req, res) {
@@ -37,17 +37,20 @@ class LibroController {
   */
 
 
-    // Elimina un libro pero brindando ISBN
+   /* // Elimina un libro pero brindando ISBN
     async delete(req, res) {
       const { ISBN } = req.body;
       const [result] = await pool.query(`
       DELETE FROM Bibliotecarest.libros WHERE ISBN = ?`, [ISBN]);
       res.json({ "Registros eliminados": result.affectedRows });
-    }
+    }*/
     
- 
-  
-  
+    // Elimina un libro por ISBN  - BORRAR - cruD (DELETE)
+  async delete(req, res) {
+    const libro = req.body;
+    const [result] = await pool.query(`DELETE FROM Bibliotecarest.libros WHERE ISBN=(?)`, [libro.ISBN]);
+    res.json({ "Registros eliminados": result.affectedRows });
+  }
   
   // Elimina un libro por ID
   /*async delete(req, res) {
@@ -56,7 +59,7 @@ class LibroController {
     res.json({ "Registros eliminados": result.affectedRows });
   }*/
 
-  // Actualiza un libro
+  // Actualiza un libro - MODIFICACION - crUd (UPDATE)
   async update(req, res) {
     const libro = req.body;
     const [result] = await pool.query(`

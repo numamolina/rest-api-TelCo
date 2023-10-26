@@ -9,8 +9,10 @@ router.post('/libros', libro.add);
 //tipo de solicitud POST, permite cargar con datos el cuerpo de la solicitud http
 
 
+
+
 //actualizada el controlador en controller.js
-router.delete('/libros', libro.delete);
+router.delete('/libros/:ISBN', libro.delete);
 //tipo de solicitud DELETE, solicitud especifica para eliminar
 
 
