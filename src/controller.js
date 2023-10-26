@@ -1,90 +1,80 @@
 import { pool } from "./database.js";
 
 class LibroController {
-  // Obtiene todos los libros - LECTURA - cRud (READ)
+  // Método para obtener todos los libros
   async getAll(req, res) {
-    const [result] = await pool.query('SELECT * FROM Bibliotecarest.libros');
-    res.json(result);
+    try {
+      const [result] = await pool.query('SELECT * FROM Bibliotecarest.libros'); // Intentar obtener todos los libros
+      res.json(result); // Responder con la lista de libros
+    } catch (error) {
+      console.error(error); // En caso de error, imprimirlo en la consola
+      res.status(500).json({ message: 'Error interno del servidor' }); // Responder con un mensaje de error en el servidor
+    }
   }
 
-  // Se agrega la funcionalidad de agregar un libro - CREAR - Crud (CREATE)
-  // Agrega un libro:
-  
+  // Método para agregar un libro
   async add(req, res) {
-   const libro = req.body;
-   const [result] = await pool.query(
-     `
-     INSERT INTO Bibliotecarest.libros(nombre, autor, categoria, año_publicacion, ISBN)
-     VALUES (?, ?, ?, ?, ?)
-     `,
-     [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN]
-   );
-   res.json({ "id insertado": result.insertId });
-   // Se le avisa al usuario que ha sido insertado un nuevo ejemplar
- } 
-  
-  
-  /*
-   async add(req, res) {
-    const libro = req.body;
-    const [result] = await pool.query(`
-      INSERT INTO Bibliotecarest.libros(nombre, autor, categoria, año_publicacion, ISBN)
-      VALUES (?, ?, ?, ?, ?)`,
-      [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN]);
-    res.json({ "id insertado": result.insertId }); 
-    //Se le avisa al usuario que ha sido insertado un nuevo ejemplar
+    try {
+      const libro = req.body; // Obtener los datos del libro del cuerpo de la solicitud
+      const [result] = await pool.query(
+        `
+        INSERT INTO Bibliotecarest.libros(nombre, autor, categoria, año_publicacion, ISBN)
+        VALUES (?, ?, ?, ?, ?)
+        `,
+        [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN]
+      ); // Intentar agregar el libro
+      res.json({ "id insertado": result.insertId }); // Responder con el ID del libro insertado
+    } catch (error) {
+      console.error(error); // En caso de error, imprimirlo en la consola
+      res.status(500).json({ message: 'Error interno del servidor' }); // Responder con un mensaje de error en el servidor
+    }
   }
-  */
 
-
-   /* // Elimina un libro pero brindando ISBN
-    async delete(req, res) {
-      const { ISBN } = req.body;
-      const [result] = await pool.query(`
-      DELETE FROM Bibliotecarest.libros WHERE ISBN = ?`, [ISBN]);
-      res.json({ "Registros eliminados": result.affectedRows });
-    }*/
-    
-    // Elimina un libro por ISBN  - BORRAR - cruD (DELETE)
+  // Método para eliminar un libro por ISBN
   async delete(req, res) {
-    const libro = req.body;
-    const [result] = await pool.query(`DELETE FROM Bibliotecarest.libros WHERE ISBN=(?)`, [libro.ISBN]);
-    res.json({ "Registros eliminados": result.affectedRows });
+    try {
+      const libro = req.body; // Obtener el libro a eliminar del cuerpo de la solicitud
+      const [result] = await pool.query(`DELETE FROM Bibliotecarest.libros WHERE ISBN=(?)`, [libro.ISBN]); // Intentar eliminar el libro por ISBN
+      res.json({ "Registros eliminados": result.affectedRows }); // Responder con la cantidad de registros eliminados
+    } catch (error) {
+      console.error(error); // En caso de error, imprimirlo en la consola
+      res.status(500).json({ message: 'Error interno del servidor' }); // Responder con un mensaje de error en el servidor
+    }
   }
-  
-  // Elimina un libro por ID
-  /*async delete(req, res) {
-    const libro = req.body;
-    const [result] = await pool.query(`DELETE FROM Bibliotecarest.libros WHERE id=(?)`, [libro.id]);
-    res.json({ "Registros eliminados": result.affectedRows });
-  }*/
 
-  // Actualiza un libro - MODIFICACION - crUd (UPDATE)
+  // Método para actualizar un libro
   async update(req, res) {
-    const libro = req.body;
-    const [result] = await pool.query(`
-      UPDATE Bibliotecarest.libros
-      SET nombre=(?), autor=(?), categoria=(?), año_publicacion=(?), ISBN=(?)
-      WHERE id=(?)`,
-      [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN, libro.id]);
-    res.json({ "Registros actualizados": result.changedRows });
+    try {
+      const libro = req.body; // Obtener los datos del libro del cuerpo de la solicitud
+      const [result] = await pool.query(
+        `
+        UPDATE Bibliotecarest.libros
+        SET nombre=(?), autor=(?), categoria=(?), año_publicacion=(?), ISBN=(?)
+        WHERE id=(?)`,
+        [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN, libro.id]
+      ); // Intentar actualizar el libro
+      res.json({ "Registros actualizados": result.changedRows }); // Responder con la cantidad de registros actualizados
+    } catch (error) {
+      console.error(error); // En caso de error, imprimirlo en la consola
+      res.status(500).json({ message: 'Error interno del servidor' }); // Responder con un mensaje de error en el servidor
+    }
   }
 
-  // Obtiene un libro por su ID
+  // Método para obtener un libro por su ID
   async getOne(req, res) {
     try {
-      const libro_id = req.params.id;
-      const [result] = await pool.query('SELECT * FROM Bibliotecarest.libros WHERE id=(?)', [libro_id]);
+      const libro_id = req.params.id; // Obtener el ID del libro de los parámetros de la URL
+      const [result] = await pool.query('SELECT * FROM Bibliotecarest.libros WHERE id=(?)', [libro_id]); // Intentar obtener el libro por ID
 
       if (result.length === 0) {
-        res.status(404).json({ message: 'Libro no encontrado' });
+        res.status(404).json({ message: 'Libro no encontrado' }); // Si no se encuentra el libro, responder con un mensaje de "no encontrado"
         return;
       }
 
-      res.json(result[0]);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Error interno del servidor' });
+      res.json(result[0]); // Responder con el libro encontrado
+    } catch (error) {
+      console.error(error); // En caso de error, imprimirlo en la consola
+      res.status(500).json({ message: 'Error interno del servidor' }); // Responder con un mensaje de error en el servidor
     }
   }
 }

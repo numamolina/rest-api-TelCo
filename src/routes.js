@@ -21,3 +21,4 @@ router.delete('/libros/:ISBN', libro.delete);
 
 
 router.put('/libros/:id', libro.update);
+//tipo de solicitud PUT, solicitud para modificar
