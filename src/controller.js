@@ -36,12 +36,25 @@ class LibroController {
   }
   */
 
-  // Elimina un libro
-  async delete(req, res) {
+
+    // Elimina un libro pero brindando ISBN
+    async delete(req, res) {
+      const { ISBN } = req.body;
+      const [result] = await pool.query(`
+      DELETE FROM Bibliotecarest.libros WHERE ISBN = ?`, [ISBN]);
+      res.json({ "Registros eliminados": result.affectedRows });
+    }
+    
+ 
+  
+  
+  
+  // Elimina un libro por ID
+  /*async delete(req, res) {
     const libro = req.body;
     const [result] = await pool.query(`DELETE FROM Bibliotecarest.libros WHERE id=(?)`, [libro.id]);
     res.json({ "Registros eliminados": result.affectedRows });
-  }
+  }*/
 
   // Actualiza un libro
   async update(req, res) {
