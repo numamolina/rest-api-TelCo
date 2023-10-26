@@ -7,15 +7,34 @@ class LibroController {
     res.json(result);
   }
 
-  // Agrega un libro.
+  // Se agrega la funcionalidad de agregar un libro
+  // Agrega un libro:
+  
   async add(req, res) {
+   const libro = req.body;
+   const [result] = await pool.query(
+     `
+     INSERT INTO Bibliotecarest.libros(nombre, autor, categoria, año_publicacion, ISBN)
+     VALUES (?, ?, ?, ?, ?)
+     `,
+     [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN]
+   );
+   res.json({ "id insertado": result.insertId });
+   // Se le avisa al usuario que ha sido insertado un nuevo ejemplar
+ } 
+  
+  
+  /*
+   async add(req, res) {
     const libro = req.body;
     const [result] = await pool.query(`
       INSERT INTO Bibliotecarest.libros(nombre, autor, categoria, año_publicacion, ISBN)
       VALUES (?, ?, ?, ?, ?)`,
       [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN]);
-    res.json({ "id insertado": result.insertId });
+    res.json({ "id insertado": result.insertId }); 
+    //Se le avisa al usuario que ha sido insertado un nuevo ejemplar
   }
+  */
 
   // Elimina un libro
   async delete(req, res) {
